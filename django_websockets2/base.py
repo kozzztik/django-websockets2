@@ -15,10 +15,10 @@ async def send_async(signal, sender, **kwargs):
             await result
 
 
-# async def sync_to_async(func, *args, **kwargs):
-#     """ Asgiref function is unstable, so use simple executor."""
-#     return await asyncio.get_event_loop().run_in_executor(
-#         None, functools.partial(func, *args, **kwargs))
+async def sync_to_async_view(func, *args, **kwargs):
+    """ Asgiref function is unstable, so use simple executor."""
+    return await asyncio.get_event_loop().run_in_executor(
+        None, functools.partial(func, *args, **kwargs))
 
 
 async def sync_to_async(func, *args, **kwargs):
@@ -126,7 +126,7 @@ class AsyncMiddlewareHandler(base.BaseHandler):
                         request, *callback_args, **callback_kwargs)
                 else:
                     #response = wrapped_callback(request, *callback_args, **callback_kwargs)
-                    response = await self.sync_executor(
+                    response = await sync_to_async_view(
                         wrapped_callback,
                         request, *callback_args, **callback_kwargs)
             except Exception as e:
